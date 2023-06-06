@@ -238,6 +238,13 @@ RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance, uint8_t again, uint8_t
     return RET_TSL2591_SUCCESS;
 }
 
+RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb) {
+    instance->callBack = cb;
+    
+    return RET_TSL2591_SUCCESS;
+}
+
+
 /* *****************************************************************************
  End of File
  */

@@ -73,9 +73,12 @@ extern "C" {
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
+typedef void (*TSL2591_Event_CallBack)(int event);
+
 typedef struct {
    /* The application's current state */
    DRV_HANDLE drvI2CHandle;
+   TSL2591_Event_CallBack callBack;
    SYS_MODULE_INDEX drvIndex;
    float atime_ms;
    float again;
@@ -99,7 +102,7 @@ typedef enum {
 RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance);
 RET_TSL2591 DRV_TSL2591_GetRawValue(DATA_TSL2591* instance);
 RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance, uint8_t again, uint8_t atime);
-
+RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb);
     /* Provide C++ Compatibility */
 #ifdef __cplusplus
 }
