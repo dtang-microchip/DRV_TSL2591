@@ -88,12 +88,13 @@ APP_DATA appData;
     See prototype in app.h.
  */
 
-void APP_Initialize (const SYS_MODULE_INDEX drvIndex)
+void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
 {
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;  
 
     appData.driverData.drvIndex = drvIndex;
+    appData.interruptPin = intpin;
 }
 
 
@@ -105,14 +106,19 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex)
     See prototype in app.h.
  */
 
+void eventCallback(int event) {
+    printf("TSL2591: Interrupt Event received\r\n");
+}
+
 void APP_Tasks ( void )
 {
 
     switch(appData.state) {
         case APP_STATE_INIT:
-            if(DRV_TSL2591_Initialize(&appData.driverData) != RET_TSL2591_SUCCESS) {
-                
+            if(DRV_TSL2591_Initialize(&appData.driverData, appData.interruptPin) != RET_TSL2591_SUCCESS) {
+                printf("App.c: Error Initializing TSL Driver\r\n");
             }
+            DRV_TSL2591_RegisterCallback(&appData.driverData, &eventCallback);
             appData.state = APP_STATE_SERVICE_TASKS;
             break;
         case APP_STATE_SERVICE_TASKS:

@@ -65,6 +65,7 @@ void BusFault_Handler (void);
 void UsageFault_Handler (void);
 void DebugMonitor_Handler (void);
 void xPortSysTickHandler (void);
+void EIC_EXTINT_7_InterruptHandler (void);
 void SERCOM3_I2C_InterruptHandler (void);
 
 

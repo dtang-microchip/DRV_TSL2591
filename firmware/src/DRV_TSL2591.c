@@ -150,8 +150,9 @@ RET_TSL2591 writeReadCommand(DATA_TSL2591* driver, char command, char len) {
   @Remarks
     Refer to the example_file.h interface header for function usage details.
  */
-RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance) {
+RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance, int intpin) {
     instance->drvI2CHandle = DRV_I2C_Open(instance->drvIndex, DRV_IO_INTENT_READWRITE);
+    instance->interruptPin = intpin;
     
     if(instance->drvI2CHandle == DRV_HANDLE_INVALID) {
         printf("TSL2591 Invalid I2C Driver Handle\r\n");
@@ -239,7 +240,13 @@ RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance, uint8_t again, uint8_t
 }
 
 RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb) {
+    if(cb == NULL) {
+        return RET_TSL2591_NULL_CALLBACK; 
+    }
     instance->callBack = cb;
+    
+    //uintptr_t* context = (uintptr_t*)instance;
+    EIC_CallbackRegister(instance->interruptPin, (EIC_CALLBACK)instance->callBack, (uintptr_t)NULL);
     
     return RET_TSL2591_SUCCESS;
 }

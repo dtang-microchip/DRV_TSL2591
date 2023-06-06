@@ -89,6 +89,7 @@ typedef struct
     /* The application's current state */
     APP_STATES state;
     DATA_TSL2591 driverData;
+    int interruptPin;
 
 } APP_DATA;
 
@@ -137,7 +138,7 @@ typedef struct
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP_Initialize (const SYS_MODULE_INDEX drvIndex);
+void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin);
 
 
 /*******************************************************************************
