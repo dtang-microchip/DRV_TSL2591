@@ -95,6 +95,7 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
 
     appData.driverData.drvIndex = drvIndex;
     appData.interruptPin = intpin;
+    appData.sampleReady = true;
 }
 
 
@@ -107,8 +108,10 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
  */
 
 void eventCallback(uintptr_t context) {
-    DATA_TSL2591* intDriverData = (DATA_TSL2591*)context;
-    printf("TSL2591: Interrupt Event received %d\r\n", (int)intDriverData->interruptPin);
+    APP_DATA* intAppData = (APP_DATA*)context;
+    //DATA_TSL2591* intDriverData = (DATA_TSL2591*)context;
+    intAppData->sampleReady = true;
+    printf("TSL2591: Interrupt Event received \r\n");
 }
 
 void APP_Tasks ( void )
@@ -119,12 +122,15 @@ void APP_Tasks ( void )
             if(DRV_TSL2591_Initialize(&appData.driverData, appData.interruptPin) != RET_TSL2591_SUCCESS) {
                 printf("App.c: Error Initializing TSL Driver\r\n");
             }
-            DRV_TSL2591_RegisterCallback(&appData.driverData, &eventCallback);
+            DRV_TSL2591_RegisterCallback(&appData.driverData, &eventCallback, (void*)&appData);
             appData.state = APP_STATE_SERVICE_TASKS;
             break;
         case APP_STATE_SERVICE_TASKS:
-            DRV_TSL2591_GetRawValue(&appData.driverData);
-            printf("app.c RawData: 0x%02x%02x%02x%02x\r\n", appData.driverData.rxBuffer[0], appData.driverData.rxBuffer[1], appData.driverData.rxBuffer[2], appData.driverData.rxBuffer[3]);
+            if(appData.sampleReady) {
+                appData.sampleReady = false;
+                DRV_TSL2591_GetRawValue(&appData.driverData);
+                printf("app.c RawData: 0x%02x%02x%02x%02x\r\n", appData.driverData.rxBuffer[0], appData.driverData.rxBuffer[1], appData.driverData.rxBuffer[2], appData.driverData.rxBuffer[3]);
+            }
             break;
         case APP_STATE_ERROR:
         default:

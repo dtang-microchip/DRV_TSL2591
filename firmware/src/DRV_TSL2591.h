@@ -104,7 +104,7 @@ typedef enum {
 RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance, int intpin);
 RET_TSL2591 DRV_TSL2591_GetRawValue(DATA_TSL2591* instance);
 RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance, uint8_t again, uint8_t atime);
-RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb);
+RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb, void* context);
     /* Provide C++ Compatibility */
 #ifdef __cplusplus
 }

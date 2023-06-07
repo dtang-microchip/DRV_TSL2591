@@ -92,6 +92,7 @@
 
 #define TSL2591_DEFAULT_CONFIG          (TSL2591_CONFIG_AGAIN_MID | TSL2591_CONFIG_ATIME_200MS)
 #define TSL2591_SINGLE_READING          (TSL2591_ENABLE_PON | TSL2591_ENABLE_AEN | TSL2591_ENABLE_AIEN)
+#define TSL2591_CLEAR_INTERRUPTS        (TSL2591_COMMAND_SPEC_FUNC | TSL2591_SF_CLEAR_ALS_NOPERS_INT) 
 #define TSL2591_REG_RAWDATA             0x14
 
 DATA_TSL2591 driverData;
@@ -180,6 +181,10 @@ RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance, int intpin) {
     if(writeCommand(instance, TSL2591_SINGLE_READING, 1, false) != RET_TSL2591_SUCCESS) {
         return RET_TSL2591_ERROR_UNKNOWN;
     }
+    
+    if(writeReadCommand(instance, TSL2591_CLEAR_INTERRUPTS, 1) != RET_TSL2591_SUCCESS) {
+        return RET_TSL2591_ERROR_UNKNOWN;
+    }
     return RET_TSL2591_SUCCESS;
 }
 
@@ -187,6 +192,10 @@ RET_TSL2591 DRV_TSL2591_GetRawValue(DATA_TSL2591* instance) {
     if(instance->drvI2CHandle == DRV_HANDLE_INVALID) {
         printf("TSL2591 Invalid I2C Driver Handle\r\n");
         return RET_TSL2591_INVALID_I2C;
+    }
+    
+    if(writeReadCommand(instance, TSL2591_CLEAR_INTERRUPTS, 1) != RET_TSL2591_SUCCESS) {
+        return RET_TSL2591_ERROR_UNKNOWN;
     }
     
     if(writeReadCommand(instance, TSL2591_REG_RAWDATA, 4) != RET_TSL2591_SUCCESS) {
@@ -239,13 +248,13 @@ RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance, uint8_t again, uint8_t
     return RET_TSL2591_SUCCESS;
 }
 
-RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb) {
+RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_CallBack cb, void* context) {
     if(cb == NULL) {
         return RET_TSL2591_NULL_CALLBACK; 
     }
     instance->callBack = cb;
     
-    void* context = instance;
+    //void* context = instance;
     EIC_CallbackRegister(instance->interruptPin, (EIC_CALLBACK)instance->callBack, (uintptr_t)context);
     
     return RET_TSL2591_SUCCESS;

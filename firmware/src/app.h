@@ -90,6 +90,7 @@ typedef struct
     APP_STATES state;
     DATA_TSL2591 driverData;
     int interruptPin;
+    bool sampleReady;
 
 } APP_DATA;
 
