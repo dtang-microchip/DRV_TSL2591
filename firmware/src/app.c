@@ -106,8 +106,9 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
     See prototype in app.h.
  */
 
-void eventCallback(int event) {
-    printf("TSL2591: Interrupt Event received\r\n");
+void eventCallback(uintptr_t context) {
+    DATA_TSL2591* intDriverData = (DATA_TSL2591*)context;
+    printf("TSL2591: Interrupt Event received %d\r\n", (int)intDriverData->interruptPin);
 }
 
 void APP_Tasks ( void )

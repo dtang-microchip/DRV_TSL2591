@@ -73,7 +73,7 @@ extern "C" {
 // Section: Data Types
 // *****************************************************************************
 // *****************************************************************************
-typedef void (*TSL2591_Event_CallBack)(int event);
+typedef void (*TSL2591_Event_CallBack)(uintptr_t context);
 
 typedef struct {
    /* The application's current state */

@@ -245,8 +245,8 @@ RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_C
     }
     instance->callBack = cb;
     
-    //uintptr_t* context = (uintptr_t*)instance;
-    EIC_CallbackRegister(instance->interruptPin, (EIC_CALLBACK)instance->callBack, (uintptr_t)NULL);
+    void* context = instance;
+    EIC_CallbackRegister(instance->interruptPin, (EIC_CALLBACK)instance->callBack, (uintptr_t)context);
     
     return RET_TSL2591_SUCCESS;
 }
