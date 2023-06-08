@@ -37,21 +37,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-// *****************************************************************************
-/* Application Data
-
-  Summary:
-    Holds application data
-
-  Description:
-    This structure holds the application's data.
-
-  Remarks:
-    This structure should be initialized by the APP_Initialize function.
-
-    Application strings and buffers are be defined outside this structure.
-*/
-
 APP_DATA appData;
 
 // *****************************************************************************
@@ -60,33 +45,17 @@ APP_DATA appData;
 // *****************************************************************************
 // *****************************************************************************
 
-/* TODO:  Add any necessary callback functions.
-*/
+void eventCallback(uintptr_t context) {
+    APP_DATA* intAppData = (APP_DATA*)context;
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Application Local Functions
-// *****************************************************************************
-// *****************************************************************************
-
-
-/* TODO:  Add any necessary local functions.
-*/
-
+    intAppData->sampleReady = true;
+}
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Initialization and State Machine Functions
 // *****************************************************************************
 // *****************************************************************************
-
-/*******************************************************************************
-  Function:
-    void APP_Initialize ( void )
-
-  Remarks:
-    See prototype in app.h.
- */
 
 void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
 {
@@ -95,7 +64,7 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
 
     appData.driverData.drvIndex = drvIndex;
     appData.interruptPin = intpin;
-    appData.sampleReady = true;
+    appData.sampleReady = true;  // Allows system to request the first sample after configuration
 }
 
 
@@ -106,14 +75,6 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
   Remarks:
     See prototype in app.h.
  */
-
-void eventCallback(uintptr_t context) {
-    APP_DATA* intAppData = (APP_DATA*)context;
-    //DATA_TSL2591* intDriverData = (DATA_TSL2591*)context;
-    intAppData->sampleReady = true;
-    printf("TSL2591: Interrupt Event received \r\n");
-}
-
 void APP_Tasks ( void )
 {
 

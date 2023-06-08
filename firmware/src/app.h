@@ -96,21 +96,13 @@ typedef struct
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Application Callback Routines
-// *****************************************************************************
-// *****************************************************************************
-/* These routines are called by drivers when certain events occur.
-*/
-
-// *****************************************************************************
-// *****************************************************************************
 // Section: Application Initialization and State Machine Functions
 // *****************************************************************************
 // *****************************************************************************
 
 /*******************************************************************************
   Function:
-    void APP_Initialize ( void )
+    void APP_Initialize ( const SYS_MODULE_INDEX drvIndex, int intpin )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -125,14 +117,15 @@ typedef struct
     this routine (in "SYS_Initialize").
 
   Parameters:
-    None.
+    drvIndex - Instance of the Harmony 3 I2C Driver to use
+    intpin - Interrupt Pin to configure 
 
   Returns:
     None.
 
   Example:
     <code>
-    APP_Initialize();
+    APP_Initialize(DRV_I2C_INDEX_0, EIC_PIN_7);
     </code>
 
   Remarks:
