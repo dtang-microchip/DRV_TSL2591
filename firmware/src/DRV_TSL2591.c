@@ -207,8 +207,7 @@ RET_TSL2591 DRV_TSL2591_GetRawValue(DATA_TSL2591* instance) {
     ch0 = (instance->rxBuffer[1]<<8) | instance->rxBuffer[0];
     ch1 = (instance->rxBuffer[3]<<8) | instance->rxBuffer[2];
     
-    uint16_t lux = (uint16_t) ((((float) ch0-ch1) * (1.0 - (float) ch1/ch0)) / instance->cpl);
-    printf("%d, %d, Lux:%d\r\n", ch0, ch1, lux);
+    instance->lux = (int) ((((float) ch0-ch1) * (1.0 - (float) ch1/ch0)) / instance->cpl);
     
     return RET_TSL2591_SUCCESS;
 }

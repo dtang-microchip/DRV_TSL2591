@@ -91,6 +91,7 @@ void APP_Tasks ( void )
                 appData.sampleReady = false;
                 DRV_TSL2591_GetRawValue(&appData.driverData);
                 printf("app.c RawData: 0x%02x%02x%02x%02x\r\n", appData.driverData.rxBuffer[0], appData.driverData.rxBuffer[1], appData.driverData.rxBuffer[2], appData.driverData.rxBuffer[3]);
+                printf("app.c Lux:%d\r\n", appData.driverData.lux);
             }
             break;
         case APP_STATE_ERROR:
