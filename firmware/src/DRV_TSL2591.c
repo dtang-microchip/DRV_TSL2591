@@ -1,17 +1,16 @@
 /* ************************************************************************** */
-/** Descriptive File Name
+/** 
 
   @Company
-    Company Name
+ Microchip, Inc
 
   @File Name
-    filename.c
+    DRV_TSL2591.c
 
   @Summary
-    Brief description of the file.
+  Driver layer for the TSL2591 Ambient Light Sensor to be used in a 
+   Microchip Harmony3 project with I2C Driver
 
-  @Description
-    Describe the purpose of this file.
  */
 /* ************************************************************************** */
 
@@ -35,8 +34,7 @@
 #define TSL2591_VAL_CHIPID              0x50
 
 /**
- * @brief Ambient 21 command register setting.
- * @details Specified setting for Command register of Ambient 21 Click driver.
+ * @brief TSL2591 command register setting.
  */
 #define TSL2591_COMMAND_NORMAL_OP       0xA0
 #define TSL2591_COMMAND_SPEC_FUNC       0xE0
@@ -46,8 +44,7 @@
 #define TSL2591_SF_CLEAR_NOPERS_INT     0x0A
 
 /**
- * @brief Ambient 21 enable register setting.
- * @details Specified setting for enable register of Ambient 21 Click driver.
+ * @brief TSL2591 enable register setting.
  */
 #define TSL2591_ENABLE_NPIEN            0x80
 #define TSL2591_ENABLE_SAI              0x40
@@ -56,8 +53,7 @@
 #define TSL2591_ENABLE_PON              0x01
 
 /**
- * @brief Ambient 21 registers list.
- * @details Specified registers list of Ambient 21 Click driver.
+ * @brief TSL2591 registers list.
  */
 #define TSL2591_REG_ENABLE              0x00
 #define TSL2591_REG_CONFIG              0x01
@@ -79,8 +75,7 @@
 #define TSL2591_REG_C1DATAH             0x17
 
 /**
- * @brief Ambient 21 lux calculation values.
- * @details Specified lux calculation values of Ambient 21 Click driver.
+ * @brief TSL2591 lux calculation values.
  */
 #define AMBIENT21_GAIN_0                    1.0f
 #define AMBIENT21_GAIN_1                    25.0f
@@ -90,8 +85,11 @@
 #define AMBIENT21_LUX_GDF                   900.0f
 #define AMBIENT21_LUX_COEF                  1.0f
 
+/**
+ * @brief Values to be used within this Driver
+ */
 #define TSL2591_DEFAULT_CONFIG          (TSL2591_CONFIG_AGAIN_MID | TSL2591_CONFIG_ATIME_200MS)
-#define TSL2591_SINGLE_READING          (TSL2591_ENABLE_PON | TSL2591_ENABLE_AEN | TSL2591_ENABLE_AIEN)
+#define TSL2591_ENABLE_READING          (TSL2591_ENABLE_PON | TSL2591_ENABLE_AEN | TSL2591_ENABLE_AIEN)
 #define TSL2591_CLEAR_INTERRUPTS        (TSL2591_COMMAND_SPEC_FUNC | TSL2591_SF_CLEAR_ALS_NOPERS_INT) 
 #define TSL2591_REG_RAWDATA             0x14
 
@@ -103,8 +101,16 @@ DATA_TSL2591 driverData;
 /* ************************************************************************** */
 /* ************************************************************************** */
 
+
+/**
+ * @brief writeCommand - Deliver the specified command via I2C
+ * @param driver - Driver Object to use for I2C Communications
+ * @param command - 8 Bit Command to send
+ * @param len - length of command (in bytes)
+ * @param normalop - boolean, true to OR with NORMAL OPERATION flag
+ * @return - return value from RET_TSL2591 typedef enum
+ */
 RET_TSL2591 writeCommand(DATA_TSL2591* driver, char command, char len, bool normalop) {
-    //char* rxbuffer = (char*)&driver->rxBuffer;
     if(normalop) {
         command |= TSL2591_COMMAND_NORMAL_OP;
     }
@@ -116,6 +122,13 @@ RET_TSL2591 writeCommand(DATA_TSL2591* driver, char command, char len, bool norm
     return RET_TSL2591_SUCCESS;
 }
 
+/**
+ * @brief writeReadCommand - Deliver the specified command via I2C, then read back values
+ * @param driver - Driver Object to use for I2C Communications
+ * @param command - 8 Bit Command to send
+ * @param len - length of values to be read (in bytes)
+ * @return - return value from RET_TSL2591 typedef enum
+ */
 RET_TSL2591 writeReadCommand(DATA_TSL2591* driver, char command, char len) {
     char* rxbuffer = (char*)&driver->rxBuffer;
     command = command | TSL2591_COMMAND_NORMAL_OP;
@@ -135,22 +148,7 @@ RET_TSL2591 writeReadCommand(DATA_TSL2591* driver, char command, char len) {
 /* ************************************************************************** */
 /* ************************************************************************** */
 
-/*  A brief description of a section can be given directly below the section
-    banner.
- */
 
-// *****************************************************************************
-
-/** 
-  @Function
-    int ExampleInterfaceFunctionName ( int param1, int param2 ) 
-
-  @Summary
-    Brief one-line description of the function.
-
-  @Remarks
-    Refer to the example_file.h interface header for function usage details.
- */
 RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance, int intpin) {
     instance->drvI2CHandle = DRV_I2C_Open(instance->drvIndex, DRV_IO_INTENT_READWRITE);
     instance->interruptPin = intpin;
@@ -178,7 +176,8 @@ RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance, int intpin) {
     if(writeCommand(instance, TSL2591_REG_ENABLE, 1, true) != RET_TSL2591_SUCCESS) {
         return RET_TSL2591_ERROR_UNKNOWN;
     }
-    if(writeCommand(instance, TSL2591_SINGLE_READING, 1, false) != RET_TSL2591_SUCCESS) {
+    
+    if(writeCommand(instance, TSL2591_ENABLE_READING, 1, false) != RET_TSL2591_SUCCESS) {
         return RET_TSL2591_ERROR_UNKNOWN;
     }
     
@@ -202,6 +201,7 @@ RET_TSL2591 DRV_TSL2591_GetRawValue(DATA_TSL2591* instance) {
         return RET_TSL2591_ERROR_UNKNOWN;
     }
     
+    // Perform CHO/CH1 -> Lux calculations
     uint16_t ch0, ch1;
     
     ch0 = (instance->rxBuffer[1]<<8) | instance->rxBuffer[0];
@@ -242,9 +242,6 @@ RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance, uint8_t again, uint8_t
     instance->atime_ms = AMBIENT21_TIME_RES + AMBIENT21_TIME_RES * atime;
     instance->cpl = (instance->atime_ms * instance->again) / AMBIENT21_LUX_GDF;
     
-
-    
-    
     return RET_TSL2591_SUCCESS;
 }
 
@@ -254,7 +251,6 @@ RET_TSL2591 DRV_TSL2591_RegisterCallback(DATA_TSL2591* instance, TSL2591_Event_C
     }
     instance->callBack = cb;
     
-    //void* context = instance;
     EIC_CallbackRegister(instance->interruptPin, (EIC_CALLBACK)instance->callBack, (uintptr_t)context);
     
     return RET_TSL2591_SUCCESS;
