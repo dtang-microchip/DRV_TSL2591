@@ -76,6 +76,7 @@ typedef struct {
    float atime_ms;
    float again;
    float cpl;
+   int lux;
    char rxBuffer[TSL2591_RXBUFFER_SIZE];
 } DATA_TSL2591;
 
@@ -119,11 +120,11 @@ RET_TSL2591 DRV_TSL2591_Initialize(DATA_TSL2591* instance, int intpin);
  * @param instance - DATA_TSL2591 object to use
  * 
  */
-RET_TSL2591 DRV_TSL2591_SetConfig(DATA_TSL2591* instance);
+RET_TSL2591 DRV_TSL2591_GetRawValue(DATA_TSL2591* instance);
 
 /** 
  * @Function
- *  RET_TSL2591 DRV_TSL2591_GetRawValue ( DATA_TSL2591* instance, uint8_t again, uint8_t atime )
+ *  RET_TSL2591 DRV_TSL2591_SetConfig ( DATA_TSL2591* instance, uint8_t again, uint8_t atime )
  * 
  * @Summary
  *  Configure and use new time and gain values for the given instance
