@@ -28,6 +28,9 @@
             <logicalFolder name="cmcc" displayName="cmcc" projectFiles="true">
               <itemPath>../src/config/default/peripheral/cmcc/plib_cmcc.h</itemPath>
             </logicalFolder>
+            <logicalFolder name="eic" displayName="eic" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/eic/plib_eic.h</itemPath>
+            </logicalFolder>
             <logicalFolder name="evsys" displayName="evsys" projectFiles="true">
               <itemPath>../src/config/default/peripheral/evsys/plib_evsys.h</itemPath>
             </logicalFolder>
@@ -272,6 +275,9 @@
             <logicalFolder name="cmcc" displayName="cmcc" projectFiles="true">
               <itemPath>../src/config/default/peripheral/cmcc/plib_cmcc.c</itemPath>
             </logicalFolder>
+            <logicalFolder name="eic" displayName="eic" projectFiles="true">
+              <itemPath>../src/config/default/peripheral/eic/plib_eic.c</itemPath>
+            </logicalFolder>
             <logicalFolder name="evsys" displayName="evsys" projectFiles="true">
               <itemPath>../src/config/default/peripheral/evsys/plib_evsys.c</itemPath>
             </logicalFolder>
@@ -361,7 +367,7 @@
         <platformTool>EdbgTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>4.21</languageToolchainVersion>
-        <platform>3</platform>
+        <platform>4</platform>
       </toolsSet>
       <packs>
         <pack name="SAME54_DFP" vendor="Microchip" version="3.7.122"/>
@@ -537,7 +543,7 @@
         <property key="wpo-lto" value="false"/>
       </C32Global>
       <EdbgTool>
-        <property key="debugoptions.useswbreakpoints" value="false"/>
+        <property key="debugoptions.useswbreakpoints" value="true"/>
         <property key="memories.programmemory.ranges" value="0-fffff"/>
         <property key="programmerToGoFilePath"
                   value="C:/Users/C75166/HarmonyProjects/Ambient21Click/firmware/Ambient21Click.X/debug/default/Ambient21Click_ptg"/>

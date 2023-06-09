@@ -215,13 +215,14 @@ void SYS_Initialize ( void* data )
 
     EVSYS_Initialize();
 
+    EIC_Initialize();
 
     /* Initialize I2C0 Driver Instance */
     sysObj.drvI2C0 = DRV_I2C_Initialize(DRV_I2C_INDEX_0, (SYS_MODULE_INIT *)&drvI2C0InitData);
     
     NVIC_Initialize();
     
-    APP_Initialize(DRV_I2C_INDEX_0);
+    APP_Initialize(DRV_I2C_INDEX_0, EIC_PIN_7);
 
 
 

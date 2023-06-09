@@ -89,16 +89,10 @@ typedef struct
     /* The application's current state */
     APP_STATES state;
     DATA_TSL2591 driverData;
+    int interruptPin;
+    bool sampleReady;
 
 } APP_DATA;
-
-// *****************************************************************************
-// *****************************************************************************
-// Section: Application Callback Routines
-// *****************************************************************************
-// *****************************************************************************
-/* These routines are called by drivers when certain events occur.
-*/
 
 // *****************************************************************************
 // *****************************************************************************
@@ -108,7 +102,7 @@ typedef struct
 
 /*******************************************************************************
   Function:
-    void APP_Initialize ( void )
+    void APP_Initialize ( const SYS_MODULE_INDEX drvIndex, int intpin )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -123,21 +117,22 @@ typedef struct
     this routine (in "SYS_Initialize").
 
   Parameters:
-    None.
+    drvIndex - Instance of the Harmony 3 I2C Driver to use
+    intpin - Interrupt Pin to configure 
 
   Returns:
     None.
 
   Example:
     <code>
-    APP_Initialize();
+    APP_Initialize(DRV_I2C_INDEX_0, EIC_PIN_7);
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
 
-void APP_Initialize (const SYS_MODULE_INDEX drvIndex);
+void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin);
 
 
 /*******************************************************************************

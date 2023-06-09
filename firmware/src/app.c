@@ -37,21 +37,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-// *****************************************************************************
-/* Application Data
-
-  Summary:
-    Holds application data
-
-  Description:
-    This structure holds the application's data.
-
-  Remarks:
-    This structure should be initialized by the APP_Initialize function.
-
-    Application strings and buffers are be defined outside this structure.
-*/
-
 APP_DATA appData;
 
 // *****************************************************************************
@@ -60,19 +45,11 @@ APP_DATA appData;
 // *****************************************************************************
 // *****************************************************************************
 
-/* TODO:  Add any necessary callback functions.
-*/
+void eventCallback(uintptr_t context) {
+    APP_DATA* intAppData = (APP_DATA*)context;
 
-// *****************************************************************************
-// *****************************************************************************
-// Section: Application Local Functions
-// *****************************************************************************
-// *****************************************************************************
-
-
-/* TODO:  Add any necessary local functions.
-*/
-
+    intAppData->sampleReady = true;
+}
 
 // *****************************************************************************
 // *****************************************************************************
@@ -80,20 +57,14 @@ APP_DATA appData;
 // *****************************************************************************
 // *****************************************************************************
 
-/*******************************************************************************
-  Function:
-    void APP_Initialize ( void )
-
-  Remarks:
-    See prototype in app.h.
- */
-
-void APP_Initialize (const SYS_MODULE_INDEX drvIndex)
+void APP_Initialize (const SYS_MODULE_INDEX drvIndex, int intpin)
 {
     /* Place the App state machine in its initial state. */
     appData.state = APP_STATE_INIT;  
 
     appData.driverData.drvIndex = drvIndex;
+    appData.interruptPin = intpin;
+    appData.sampleReady = true;  // Allows system to request the first sample after configuration
 }
 
 
@@ -104,20 +75,24 @@ void APP_Initialize (const SYS_MODULE_INDEX drvIndex)
   Remarks:
     See prototype in app.h.
  */
-
 void APP_Tasks ( void )
 {
 
     switch(appData.state) {
         case APP_STATE_INIT:
-            if(DRV_TSL2591_Initialize(&appData.driverData) != RET_TSL2591_SUCCESS) {
-                
+            if(DRV_TSL2591_Initialize(&appData.driverData, appData.interruptPin) != RET_TSL2591_SUCCESS) {
+                printf("App.c: Error Initializing TSL Driver\r\n");
             }
+            DRV_TSL2591_RegisterCallback(&appData.driverData, &eventCallback, (void*)&appData);
             appData.state = APP_STATE_SERVICE_TASKS;
             break;
         case APP_STATE_SERVICE_TASKS:
-            DRV_TSL2591_GetRawValue(&appData.driverData);
-            printf("app.c RawData: 0x%02x%02x%02x%02x\r\n", appData.driverData.rxBuffer[0], appData.driverData.rxBuffer[1], appData.driverData.rxBuffer[2], appData.driverData.rxBuffer[3]);
+            if(appData.sampleReady) {
+                appData.sampleReady = false;
+                DRV_TSL2591_GetRawValue(&appData.driverData);
+                printf("app.c RawData: 0x%02x%02x%02x%02x\r\n", appData.driverData.rxBuffer[0], appData.driverData.rxBuffer[1], appData.driverData.rxBuffer[2], appData.driverData.rxBuffer[3]);
+                printf("app.c Lux:%d\r\n", appData.driverData.lux);
+            }
             break;
         case APP_STATE_ERROR:
         default:

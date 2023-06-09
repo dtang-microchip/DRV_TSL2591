@@ -18,7 +18,7 @@
 21,PA04,,Available,,,,,,NORMAL
 22,PA05,,Available,,,,,,NORMAL
 23,PA06,,Available,,,,,,NORMAL
-24,PA07,GPIO_PA07,GPIO,Digital,In,n/a,No,No,NORMAL
+24,PA07,TSL2591_INT,EIC_EXTINT7,Digital,In,n/a,No,No,NORMAL
 27,PC04,,Available,,,,,,NORMAL
 28,PC05,,Available,,,,,,NORMAL
 29,PC06,,Available,,,,,,NORMAL
